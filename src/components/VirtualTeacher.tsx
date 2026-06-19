@@ -234,7 +234,7 @@ export const VirtualTeacher: React.FC<VirtualTeacherProps> = ({
 
               <div className="space-y-1">
                 <span className="text-[9px] text-slate-400 block px-1">
-                  {msg.sender === 'student' ? 'أنت' : teacherType === 'ahmed' ? 'الأستاذ أحمد' : 'الأستاذة ليلى'} • {msg.timestamp}
+                  {msg.sender === 'student' ? 'أنت' : teacherType === 'ahmed' ? 'الأستاذ عثمان' : 'الأستاذ منى'} • {msg.timestamp}
                 </span>
 
                 <div className={`p-3.5 rounded-2xl text-[11px] leading-relaxed whitespace-pre-wrap ${
