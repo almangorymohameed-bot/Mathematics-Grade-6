@@ -9,6 +9,7 @@ interface StudentDashboardProps {
   achievements: Achievement[];
   parentGoals: ParentGoal[];
   onSelectUnit: (unitId: string) => void;
+  onSelectGlossary?: () => void;
   isArabicNumeral: boolean;
   onResetProgress: () => void;
 }
@@ -26,6 +27,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   parentGoals,
   achievements,
   onSelectUnit,
+  onSelectGlossary,
   isArabicNumeral,
   onResetProgress,
 }) => {
@@ -218,6 +220,31 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               );
             })}
           </div>
+
+          {/* New Glossary Promotion and Quick Entry Banner */}
+          {onSelectGlossary && (
+            <div 
+              onClick={onSelectGlossary}
+              className="bg-gradient-to-l from-indigo-50 via-indigo-100/30 to-slate-50 dark:from-indigo-950/20 dark:to-slate-900 border border-indigo-200/50 dark:border-indigo-800/50 rounded-2xl p-5 mt-6 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:border-indigo-400 transition shadow-xs group"
+              id="dashboard_glossary_promo"
+            >
+              <div className="flex items-center gap-3.5 text-right w-full md:w-auto">
+                <span className="text-3xl p-2.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 rounded-xl group-hover:scale-110 transition shrink-0">📖</span>
+                <div>
+                  <h4 className="font-extrabold text-slate-800 dark:text-slate-100 text-sm">موسوعة المصطلحات الرياضية والقاموس الذكي 🗣️✨</h4>
+                  <p className="text-[11px] text-[#4a4a40] dark:text-slate-300 leading-relaxed font-semibold mt-1">
+                    تريد فهم أعمق للبرهان الرياضي، الرموز، والمجموعات؟ تصفح القاموس التفاعلي الشامل مع نطق صوتي وتطبيقات حية!
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); onSelectGlossary(); }}
+                className="bg-indigo-650 hover:bg-indigo-750 text-white font-extrabold text-[10px] py-2 px-4 rounded-xl transition shadow shrink-0 cursor-pointer text-right"
+              >
+                افتح الموسوعة التفاعلية 👈
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Sidebar avatar chooser & Reward checklist */}

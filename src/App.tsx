@@ -37,6 +37,7 @@ import { ParentDashboard } from './components/ParentDashboard';
 import { VirtualTeacher } from './components/VirtualTeacher';
 import { NotificationDrawer } from './components/NotificationDrawer';
 import { MathGames } from './components/MathGames';
+import { MathGlossary } from './components/MathGlossary';
 
 // Pre-defined Achievements list
 const INITIAL_ACHIEVEMENTS: Achievement[] = [
@@ -132,7 +133,7 @@ export default function App() {
   });
 
   // Navigation states
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'lessons' | 'quizzes' | 'parents' | 'teacher' | 'games'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'lessons' | 'quizzes' | 'parents' | 'teacher' | 'games' | 'glossary'>('dashboard');
   const [selectedUnitIdStr, setSelectedUnitIdStr] = useState<string | null>(null);
   const [selectedLessonIdStr, setSelectedLessonIdStr] = useState<string | null>(null);
   const [activeQuizUnitIdStr, setActiveQuizUnitIdStr] = useState<string | null>(null);
@@ -521,6 +522,20 @@ export default function App() {
             >
               <Shield className="w-4 h-4" /> أولياء الأمور
             </button>
+            <button
+              id="glossary_nav_btn"
+              onClick={() => {
+                setActiveTab('glossary');
+                setSelectedUnitIdStr(null);
+                setSelectedLessonIdStr(null);
+                setActiveQuizUnitIdStr(null);
+              }}
+              className={`flex items-center gap-1 py-2.5 px-4 rounded-xl transition ${
+                activeTab === 'glossary' ? 'bg-indigo-50 text-indigo-650' : 'hover:bg-slate-50 text-slate-700'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" /> موسوعة المصطلحات 📖
+            </button>
           </nav>
 
           {/* Quick status bar on right with notification alerts triggers */}
@@ -575,6 +590,11 @@ export default function App() {
             onSelectUnit={(unitId) => {
               setSelectedUnitIdStr(unitId);
               setActiveTab('lessons');
+            }}
+            onSelectGlossary={() => {
+              setActiveTab('glossary');
+              setSelectedUnitIdStr(null);
+              setSelectedLessonIdStr(null);
             }}
             isArabicNumeral={isArabicNumeral}
             onResetProgress={handleResetAllProgress}
@@ -974,6 +994,11 @@ export default function App() {
             studentName={localStorage.getItem('sudanese_math_custom_name') || 'أحمد النابغة'}
           />
         )}
+
+        {/* TAB 7: Sudanese Math Encyclopedia of Terms */}
+        {activeTab === 'glossary' && (
+          <MathGlossary isArabicNumeral={isArabicNumeral} />
+        )}
       </main>
 
       {/* Footer bar */}
@@ -1053,6 +1078,21 @@ export default function App() {
         >
           <MessageCircle className="w-5 h-5 mb-1" />
           <span>المعلم</span>
+        </button>
+        <button
+          id="mobile_glossary_nav_btn"
+          onClick={() => {
+            setActiveTab('glossary');
+            setSelectedUnitIdStr(null);
+            setSelectedLessonIdStr(null);
+            setActiveQuizUnitIdStr(null);
+          }}
+          className={`flex flex-col items-center text-[10px] font-black ${
+            activeTab === 'glossary' ? 'text-indigo-650' : 'text-slate-400'
+          }`}
+        >
+          <BookOpen className="w-5 h-5 mb-1" />
+          <span>الموسوعة</span>
         </button>
         <button
           onClick={() => {
