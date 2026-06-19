@@ -12,6 +12,12 @@ export interface Lesson {
   }>;
   interactiveType?: 'sets' | 'integers' | 'percentage' | 'algebra' | 'geometry' | 'pythagoras';
   interactiveData?: any;
+  realWorldProblems?: Array<{
+    scenario: string; // Real world context, e.g., "في مشروع الجزيرة الزراعي..."
+    question: string; // The math question
+    answer: string; // The final answer
+    explanation: string; // How we solved it in real life
+  }>;
 }
 
 export interface Unit {

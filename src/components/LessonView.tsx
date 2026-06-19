@@ -64,6 +64,12 @@ export const LessonView: React.FC<LessonViewProps> = ({
   const [pythA, setPythA] = useState<number>(3);
   const [pythB, setPythB] = useState<number>(4);
 
+  // Real-world problems: track which problem solutions/answers are revealed
+  const [revealedProblems, setRevealedProblems] = useState<Record<string, boolean>>({});
+
+  // Solved examples: track which final written results are revealed
+  const [revealedExamples, setRevealedExamples] = useState<Record<string, boolean>>({});
+
   // Stop background speaking on unmount
   useEffect(() => {
     return () => {
@@ -454,15 +460,126 @@ export const LessonView: React.FC<LessonViewProps> = ({
 
                       <div className="pt-2 border-t border-[#f5f5f0] flex items-center justify-between text-[11px]">
                         <span className="font-bold text-[#5A5A40]">النتيجة النهائية الكِتابية:</span>
-                        <span className="bg-green-50 text-green-800 font-extrabold px-3 py-1.5 rounded-lg border border-green-200 shadow-sm">
-                          {ex.result}
-                        </span>
+                        {revealedExamples[`${lesson.id}_ex_${idx}`] ? (
+                          <div className="flex items-center gap-2">
+                            <span className="bg-green-50 text-green-800 font-extrabold px-3 py-1.5 rounded-lg border border-green-200 shadow-sm">
+                              {ex.result}
+                            </span>
+                            <button
+                              onClick={() => setRevealedExamples(prev => ({ ...prev, [`${lesson.id}_ex_${idx}`]: false }))}
+                              className="text-[9px] text-[#8e8e7a] hover:text-[#5A5A40] hover:underline"
+                              id={`hide_ex_${idx}`}
+                            >
+                              إخفاء ↩️
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setRevealedExamples(prev => ({ ...prev, [`${lesson.id}_ex_${idx}`]: true }))}
+                            className="bg-[#5A5A40] hover:bg-[#4a4a35] text-[#fdfdfb] font-bold px-3 py-1.5 rounded-lg text-[9px] shadow-sm transition active:scale-95 cursor-pointer"
+                            id={`reveal_ex_${idx}`}
+                          >
+                            👁️ اضغط لإظهار النتيجة
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
                 );
               })}
             </div>
+
+            {/* REAL-WORLD SUDANESE PROBLEMS SECTION */}
+            {lesson.realWorldProblems && lesson.realWorldProblems.length > 0 && (
+              <div className="bg-gradient-to-br from-emerald-50/20 via-white to-emerald-50/10 rounded-2xl p-6 border border-emerald-100 shadow-sm space-y-4 text-right">
+                <div className="flex items-center justify-between border-b border-emerald-55 pb-2">
+                  <h3 className="font-extrabold text-emerald-800 text-sm flex items-center gap-2">
+                    <span className="p-1 px-2.5 bg-emerald-50 text-emerald-700 border border-emerald-150 rounded-lg text-xs">٣</span>
+                    مسائل وتطبيقات من الواقع الحقيقي في السودان 🇸🇩
+                  </h3>
+                  <span className="text-[10px] font-bold py-0.5 px-2.5 bg-emerald-600 text-white rounded-full">الربط الحياتي الميداني</span>
+                </div>
+
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  الرياضيات ليست مجرد أرقام صماء! إليك كيف نستخدم مفاهيم هذا الدرس لحل مشكلات عملية حقيقية في حقول، ومشاريع، وصناعة السودان:
+                </p>
+
+                {lesson.realWorldProblems.map((prob, pIdx) => {
+                  const probBlockId = `prob_${pIdx}`;
+                  const key = `${lesson.id}_prob_${pIdx}`;
+                  const isRevealed = !!revealedProblems[key];
+                  const probSpeechText = `تطبيق من الواقع الحي. سياق القصة: ${prob.scenario}. المسألة: ${prob.question}. طريقة الحل في الميدان: ${prob.explanation}. النتيجة النهائية: ${prob.answer}`;
+
+                  return (
+                    <div key={pIdx} className="bg-emerald-50/30 border border-emerald-100/50 p-5 rounded-xl space-y-4">
+                      {/* Scenario Row with Speaker */}
+                      <div className="flex items-center justify-between gap-4 border-b border-emerald-100/40 pb-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base text-emerald-600">🌍</span>
+                          <span className="text-xs font-extrabold text-[#5A5A40]">سياق القصة: {prob.scenario}</span>
+                        </div>
+                        <button
+                          onClick={() => speakText(probSpeechText, probBlockId)}
+                          className={`flex items-center gap-1 text-[9px] font-bold px-2.5 py-1 rounded-lg border transition ${
+                            currentSpeechBlock === probBlockId && isPlaying
+                              ? 'bg-red-50 text-red-700 border-red-200'
+                              : 'bg-emerald-100/40 text-emerald-800 hover:bg-emerald-100 border-emerald-200'
+                          }`}
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                          {currentSpeechBlock === probBlockId && isPlaying ? "إيقاف" : "استمع للقصة"}
+                        </button>
+                      </div>
+
+                      {/* Question */}
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] text-emerald-800 font-extrabold block">❓ المسألة والطلب الحياتي:</span>
+                        <p className="text-xs font-bold text-slate-700 leading-relaxed">{prob.question}</p>
+                      </div>
+
+                      {/* Explanation & Result Toggle */}
+                      {isRevealed ? (
+                        <div className="space-y-4">
+                          {/* Explanation */}
+                          <div className="space-y-1.5 pl-2 border-r-2 border-emerald-400/50 mr-1 pr-3">
+                            <span className="text-[10px] text-emerald-800 font-extrabold block">💡 الحل والبرهان الرياضي الميداني:</span>
+                            <p className="text-[11px] text-[#4a4a40] leading-relaxed">{prob.explanation}</p>
+                          </div>
+
+                          {/* Result */}
+                          <div className="pt-2 border-t border-emerald-100/40 flex items-center justify-between text-[11px]">
+                            <span className="font-bold text-emerald-800">🎯 النتيجة الميدانية المعتمدة:</span>
+                            <div className="flex items-center gap-3">
+                              <span className="bg-emerald-600 text-white font-black px-3 py-1.5 rounded-lg shadow-sm">
+                                {prob.answer}
+                              </span>
+                              <button
+                                onClick={() => setRevealedProblems(prev => ({ ...prev, [key]: false }))}
+                                className="text-[10px] text-emerald-700 hover:underline font-bold"
+                              >
+                                إخفاء الحل ↩️
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-white/80 dark:bg-slate-900/50 p-4 rounded-xl border border-dashed border-emerald-250 text-center space-y-2">
+                          <p className="text-[11px] text-slate-500 font-medium">
+                            📝 فكّر في السؤال ومجرياته بعناية أولاً، وبعد حله في دفترك اضغط على الزر أدناه لمطابقة ومراجعة خطوات البرهان والحل المعتمد!
+                          </p>
+                          <button
+                            onClick={() => setRevealedProblems(prev => ({ ...prev, [key]: true }))}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black py-2 px-5 rounded-xl transition shadow-md active:scale-95 inline-flex items-center gap-1"
+                          >
+                            💡 عرض الحل والبرهان الرياضي الميداني والنتيجة 🎯
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Quick study widgets column */}

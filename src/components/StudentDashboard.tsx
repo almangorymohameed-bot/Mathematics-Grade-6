@@ -14,7 +14,7 @@ interface StudentDashboardProps {
 }
 
 const AVATARS = [
-  { id: '1', name: 'أحمد النابغة', emoji: '🧑‍قبعة' },
+  { id: '1', name: 'أحمد النابغة', emoji: '🧑‍🎓' },
   { id: '2', name: 'منى المتفوقة', emoji: '👩‍🎓' },
   { id: '3', name: 'عمر الذكي', emoji: '👦' },
   { id: '4', name: 'فاطمة العبقرية', emoji: '👧' },
@@ -33,6 +33,10 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
     return localStorage.getItem('sudanese_math_avatar_id') || '1';
   });
 
+  const [customName, setCustomName] = useState<string>(() => {
+    return localStorage.getItem('sudanese_math_custom_name') || '';
+  });
+
   const formatNum = (val: number | string) => {
     return isArabicNumeral ? toEasternArabicNumerals(val) : val.toString();
   };
@@ -43,6 +47,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   };
 
   const activeAvatar = AVATARS.find((a) => a.id === selectedAvatarId) || AVATARS[0];
+  const displayName = customName.trim() || activeAvatar.name;
 
   // Level names reflecting encouragement in Sudan
   const getLevelName = (lvl: number) => {
@@ -82,7 +87,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 الصف السادس الابتدائي - المنهج السوداني
               </span>
               <h2 className="text-xl md:text-2xl font-black mt-1">
-                مرحباً بك يا {activeAvatar.name} في منصة الأرقام الذكية!
+                مرحباً بك يا {displayName} في منصة الأرقام الذكية!
               </h2>
               <p className="text-sm text-indigo-100 mt-2 font-medium">
                 رتب خطواتك، حل التمارين وتتبع مسيرتك المليئة بالثقافة والرياضيات.
@@ -224,13 +229,32 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
             </h3>
             <div className="flex items-center gap-3 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
               <span className="text-3xl">{activeAvatar.emoji}</span>
-              <div>
-                <h4 className="text-sm font-bold text-indigo-900">{activeAvatar.name}</h4>
-                <p className="text-[10px] text-slate-500 mt-1">تلميذ نجيب بالسنة السادسة</p>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-black text-indigo-900 truncate">{displayName}</h4>
+                <p className="text-[10px] text-slate-500 mt-0.5">تلميذ نجيب بالسنة السادسة</p>
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-500 my-3">هل تود تغيير اسمك أو رمزك للمدارس؟ اختر رمزاً:</p>
+            {/* Renaming Input Block */}
+            <div className="mt-3.5 space-y-1.5 text-right bg-slate-50/80 p-3 rounded-xl border border-slate-100">
+              <label className="text-[10px] font-black text-slate-500 block">اكتب اسمك الحقيقي المسجّل بالمدرسة ✍️:</label>
+              <input
+                type="text"
+                value={customName}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCustomName(val);
+                  localStorage.setItem('sudanese_math_custom_name', val);
+                }}
+                placeholder="مثال: منى محمد عثمان"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white text-slate-800 placeholder:text-slate-400 font-bold"
+              />
+              <span className="text-[9px] text-[#8e8e7a] block leading-normal">
+                سيتم استخدام هذا الاسم في لوحة الشرف وفي نتائج رول التفوق والامتحانات المخصصة.
+              </span>
+            </div>
+
+            <p className="text-[11px] text-slate-500 my-3 pt-1 border-t border-slate-50">هل تود تغيير رمزك للمدارس؟ اختر رمزاً:</p>
             <div className="grid grid-cols-2 gap-2">
               {AVATARS.map((avatar) => (
                 <button

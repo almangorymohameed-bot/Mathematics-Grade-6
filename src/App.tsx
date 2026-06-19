@@ -21,7 +21,8 @@ import {
   Sun,
   ClipboardList,
   Sparkles,
-  Brain
+  Brain,
+  Gamepad2
 } from 'lucide-react';
 
 import { curriculumData, toEasternArabicNumerals } from './curriculumData';
@@ -35,6 +36,7 @@ import { QuizSystem } from './components/QuizSystem';
 import { ParentDashboard } from './components/ParentDashboard';
 import { VirtualTeacher } from './components/VirtualTeacher';
 import { NotificationDrawer } from './components/NotificationDrawer';
+import { MathGames } from './components/MathGames';
 
 // Pre-defined Achievements list
 const INITIAL_ACHIEVEMENTS: Achievement[] = [
@@ -130,7 +132,7 @@ export default function App() {
   });
 
   // Navigation states
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'lessons' | 'quizzes' | 'parents' | 'teacher'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'lessons' | 'quizzes' | 'parents' | 'teacher' | 'games'>('dashboard');
   const [selectedUnitIdStr, setSelectedUnitIdStr] = useState<string | null>(null);
   const [selectedLessonIdStr, setSelectedLessonIdStr] = useState<string | null>(null);
   const [activeQuizUnitIdStr, setActiveQuizUnitIdStr] = useState<string | null>(null);
@@ -332,6 +334,35 @@ export default function App() {
     );
   };
 
+  // Award Points for Educational Interactive Games
+  const handleAwardPoints = (additionalPoints: number) => {
+    const rewardedPoints = progress.points + additionalPoints;
+    let currentLvl = progress.level;
+    const needed = currentLvl * 150;
+    if (rewardedPoints >= needed) {
+      currentLvl += 1;
+      pushNotification(
+        '🏆 تهانينا! ارتقيت إلى مرتبة أعلى!',
+        `أحسنت المساعي! لقد ارتقيت إلى المستوى الأكاديمي الرقم (${printNum(currentLvl)}) بسبب تفوقك في المعامل والمسابقات التنشيطية!`,
+        'success'
+      );
+    }
+    setProgress((prev) => ({
+      ...prev,
+      points: rewardedPoints,
+      level: currentLvl
+    }));
+
+    setAchievements((prevAch) =>
+      prevAch.map((ach) => {
+        if (ach.id === 'ach_points_500') {
+          return { ...ach, currentProgress: Math.min(ach.maxProgress, rewardedPoints) };
+        }
+        return ach;
+      })
+    );
+  };
+
   // Create customized Parent Goals Alerts
   const handleAddParentGoal = (goalText: string, targetPoints: number) => {
     const newGoal: ParentGoal = {
@@ -450,6 +481,19 @@ export default function App() {
               }`}
             >
               <Award className="w-4 h-4" /> اختبارات دورية
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('games');
+                setSelectedUnitIdStr(null);
+                setSelectedLessonIdStr(null);
+                setActiveQuizUnitIdStr(null);
+              }}
+              className={`flex items-center gap-1 py-2.5 px-4 rounded-xl transition ${
+                activeTab === 'games' ? 'bg-indigo-50 text-indigo-650' : 'hover:bg-slate-50 text-slate-700'
+              }`}
+            >
+              <Gamepad2 className="w-4 h-4" /> ألعاب وتسلية 🎮
             </button>
             <button
               onClick={() => {
@@ -921,6 +965,15 @@ export default function App() {
             }}
           />
         )}
+
+        {/* TAB 6: Games Arena and Interactive Simulations */}
+        {activeTab === 'games' && (
+          <MathGames
+            isArabicNumeral={isArabicNumeral}
+            onAwardPoints={handleAwardPoints}
+            studentName={localStorage.getItem('sudanese_math_custom_name') || 'أحمد النابغة'}
+          />
+        )}
       </main>
 
       {/* Footer bar */}
@@ -972,6 +1025,20 @@ export default function App() {
         >
           <Award className="w-5 h-5 mb-1" />
           <span>الاختبارات</span>
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab('games');
+            setSelectedUnitIdStr(null);
+            setSelectedLessonIdStr(null);
+            setActiveQuizUnitIdStr(null);
+          }}
+          className={`flex flex-col items-center text-[10px] font-black ${
+            activeTab === 'games' ? 'text-indigo-650' : 'text-slate-400'
+          }`}
+        >
+          <Gamepad2 className="w-5 h-5 mb-1" />
+          <span>الألعاب</span>
         </button>
         <button
           onClick={() => {

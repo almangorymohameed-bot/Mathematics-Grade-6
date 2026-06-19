@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Award, Check, X, ArrowRight, RotateCw, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Question } from '../types';
 import { toEasternArabicNumerals } from '../curriculumData';
 
@@ -90,12 +91,14 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
     <div id="quiz_wrapper" className="max-w-2xl mx-auto space-y-6 text-right">
       {/* Quiz Progress header */}
       <div className="flex items-center justify-between">
-        <button
+        <motion.button
           onClick={onGoBack}
-          className="text-xs text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg text-right"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="text-xs text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg text-right cursor-pointer"
         >
           مغادرة الاختبار
-        </button>
+        </motion.button>
         <span className="text-xs font-bold text-indigo-650">
           اختبار دوري: {unitTitle}
         </span>
@@ -133,7 +136,7 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
 
                 if (hasSubmitted) {
                   if (opt === activeQuestion.correctAnswer) {
-                    optStyle = 'border-emerald-500 bg-emerald-50 text-emerald-800 font-extrabold';
+                    optStyle = 'border-emerald-500 bg-emerald-50 text-emerald-800 font-extrabold shadow-sm';
                   } else if (isSelected) {
                     optStyle = 'border-rose-300 bg-rose-50 text-rose-800';
                   } else {
@@ -143,18 +146,37 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
                   optStyle = 'border-indigo-650 bg-indigo-50/50 text-indigo-800 font-bold';
                 }
 
+                // Interactive animations on click/feedback: Pulse if correct on submit, Shake if wrong on submit, click scale contraction
+                let animateState: any = {};
+                if (hasSubmitted) {
+                  if (isSelected) {
+                    if (selectedAnswer === activeQuestion.correctAnswer) {
+                      animateState = { scale: [1, 1.05, 0.95, 1.03, 1], transition: { duration: 0.4 } };
+                    } else {
+                      animateState = { x: [0, -8, 8, -6, 6, -4, 4, 0], transition: { duration: 0.5 } };
+                    }
+                  } else if (opt === activeQuestion.correctAnswer) {
+                    animateState = { scale: [1, 1.02, 1], transition: { duration: 0.3, delay: 0.1 } };
+                  }
+                } else if (isSelected) {
+                  animateState = { scale: [1, 1.02, 1], transition: { duration: 0.2 } };
+                }
+
                 return (
-                  <button
+                  <motion.button
                     key={oIdx}
                     onClick={() => handleSelectOption(opt)}
                     disabled={hasSubmitted}
-                    className={`p-4 rounded-xl border text-right text-xs transition duration-200 flex items-center justify-between ${optStyle}`}
+                    animate={animateState}
+                    whileHover={!hasSubmitted ? { scale: 1.015, x: -4, transition: { duration: 0.2 } } : {}}
+                    whileTap={!hasSubmitted ? { scale: 0.97, transition: { duration: 0.1 } } : {}}
+                    className={`p-4 rounded-xl border text-right text-xs flex items-center justify-between cursor-pointer select-none ${optStyle}`}
                   >
                     <span>{formatNum(opt)}</span>
                     <span className="font-mono text-[10px] text-slate-400">
                       خيار {formatNum(oIdx + 1)}
                     </span>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -186,24 +208,28 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
           {/* Control bottom state */}
           <div className="pt-4 border-t border-slate-50 flex items-center justify-end gap-3">
             {!hasSubmitted ? (
-              <button
+              <motion.button
                 onClick={handleSubmitAnswer}
                 disabled={!selectedAnswer}
-                className={`text-xs px-6 py-3 rounded-xl font-bold transition ${
+                whileHover={selectedAnswer ? { scale: 1.02 } : {}}
+                whileTap={selectedAnswer ? { scale: 0.97 } : {}}
+                className={`text-xs px-6 py-3 rounded-xl font-bold transition cursor-pointer ${
                   selectedAnswer
                     ? 'bg-indigo-650 text-white shadow-md'
                     : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                 }`}
               >
                 تأكيد الإجابة والتحقق من الحل
-              </button>
+              </motion.button>
             ) : (
-              <button
+              <motion.button
                 onClick={handleNextQuestion}
-                className="bg-indigo-650 hover:bg-indigo-750 text-white text-xs px-6 py-3 rounded-xl font-bold shadow-md transition"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="bg-indigo-650 hover:bg-indigo-750 text-white text-xs px-6 py-3 rounded-xl font-bold shadow-md cursor-pointer"
               >
                 {currentIdx + 1 < questions.length ? 'السؤال التالي 👈' : 'إنهاء الاختبار وإرشاد النتائج'}
-              </button>
+              </motion.button>
             )}
           </div>
         </div>
@@ -268,18 +294,22 @@ export const QuizSystem: React.FC<QuizSystemProps> = ({
 
           {/* Action bottom actions bar */}
           <div className="pt-2 flex items-center justify-center gap-3">
-            <button
+            <motion.button
               onClick={handleReset}
-              className="text-xs text-slate-600 hover:text-slate-800 font-bold bg-slate-100 py-3 px-5 rounded-xl flex items-center gap-1.5 transition"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className="text-xs text-slate-600 hover:text-slate-800 font-bold bg-slate-100 py-3 px-5 rounded-xl flex items-center gap-1.5 cursor-pointer"
             >
               <RotateCw className="w-4 h-4 ml-1" /> إعادة المحاولة
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={onGoBack}
-              className="text-xs text-white bg-indigo-650 hover:bg-indigo-750 font-bold py-3 px-6 rounded-xl shadow-md transition"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className="text-xs text-white bg-indigo-650 hover:bg-indigo-750 font-bold py-3 px-6 rounded-xl shadow-md cursor-pointer"
             >
               الذهاب للقائمة الرئيسية
-            </button>
+            </motion.button>
           </div>
         </div>
       )}
