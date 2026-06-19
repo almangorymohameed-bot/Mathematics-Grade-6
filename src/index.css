@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Cairo", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", "Georgia", serif;
+  
+  --color-slate-50: #f5f5f0;
+  --color-slate-100: #e0e0d1;
+  --color-slate-200: #d6d6c2;
+  --color-slate-300: #a3a380;
+  --color-slate-400: #8e8e7a;
+  --color-slate-500: #8e8e7a;
+  --color-slate-600: #6b6b5a;
+  --color-slate-700: #4a4a40;
+  --color-slate-800: #4a4a40;
+  --color-slate-850: #4a4a40;
+  --color-slate-900: #383827;
+
+  --color-indigo-50: #e9ece1;
+  --color-indigo-100: #d6dbcc;
+  --color-indigo-150: #ccd1be;
+  --color-indigo-200: #ccd1be;
+  --color-indigo-500: #5A5A40;
+  --color-indigo-600: #5A5A40;
+  --color-indigo-650: #5A5A40;
+  --color-indigo-700: #4a4a33;
+  --color-indigo-750: #4a4a33;
+  --color-indigo-800: #3a3a29;
+  --color-indigo-900: #2a2a1d;
+
+  --color-blue-50: #e9ece1;
+  --color-blue-100: #d6dbcc;
+  --color-blue-600: #5A5A40;
+  --color-blue-700: #4a4a33;
+
+  --color-purple-50: #e9ece1;
+  --color-purple-100: #d6dbcc;
+  --color-purple-500: #5A5A40;
+  --color-purple-600: #4a4a33;
+
+  --color-emerald-50: #e9ece1;
+  --color-emerald-100: #d6dbcc;
+  --color-emerald-500: #5A5A40;
+  --color-emerald-800: #4a4a33;
+}
+
+/* Base resets & theme enhancements */
+body {
+  background-color: var(--color-slate-50) !important;
+  color: var(--color-slate-700) !important;
+  font-family: "Cairo", "Inter", sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html {
+  background-color: var(--color-slate-50) !important;
+  transition: background-color 0.25s ease;
+}
+
+html.dark {
+  /* Slate variables for eye-safe dark study mode (night clay aesthetics) */
+  --color-slate-50: #0d0d0a;  /* deep dark sand night background */
+  --color-slate-100: #171712; /* soft card background */
+  --color-slate-200: #25251d; /* subtle outline borders */
+  --color-slate-300: #424230;
+  --color-slate-400: #7a7a5f;
+  --color-slate-500: #8f8f74;
+  --color-slate-600: #a8a88a;
+  --color-slate-700: #e3e3d3; /* dominant soft-beige text */
+  --color-slate-800: #f2f2e4;
+  --color-slate-850: #fcfcf7;
+  --color-slate-900: #ffffff;
+
+  /* Indigo variables representing warm night clay/wood accent tones */
+  --color-indigo-50: #1b1b15;
+  --color-indigo-100: #27271e;
+  --color-indigo-150: #353527;
+  --color-indigo-200: #353527;
+  --color-indigo-500: #a3a375; /* comfortable dim clay accent yellow-brown */
+  --color-indigo-600: #b5b583;
+  --color-indigo-650: #c9c997;
+  --color-indigo-700: #dfdfb3;
+  --color-indigo-750: #f0f0cb;
+  --color-indigo-800: #fcfce8;
+  --color-indigo-900: #ffffff;
+
+  /* Blue variants corresponding to safe night sand */
+  --color-blue-50: #1b1b15;
+  --color-blue-100: #27271e;
+  --color-blue-600: #b5b583;
+  --color-blue-700: #dfdfb3;
+
+  /* Purple variants */
+  --color-purple-50: #1b1b15;
+  --color-purple-100: #27271e;
+  --color-purple-500: #b5b583;
+  --color-purple-600: #dfdfb3;
+
+  /* Emerald variants adjusted to comforting soft sage green */
+  --color-emerald-50: #101912;
+  --color-emerald-100: #182b20;
+  --color-emerald-500: #4ba64c;
+  --color-emerald-800: #baf7bc;
+}
+
+/* Explicit class overrides in dark mode to ensure high-contrast visibility */
+html.dark .bg-white {
+  background-color: #171712 !important;
+}
+
+html.dark .bg-\[\#fdfdfb\] {
+  background-color: #1a1a15 !important;
+}
+
+html.dark .bg-\[\#f5f5f0\] {
+  background-color: #22221a !important;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #13130f !important;
+}
+
+html.dark .border-slate-100,
+html.dark .border-slate-150,
+html.dark .border-slate-200,
+html.dark .border-\[\#e0e0d1\],
+html.dark .border-slate-200\/50 {
+  border-color: #2e2e24 !important;
+}
+
+html.dark .text-slate-800 {
+  color: #f2f2e4 !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-950,
+html.dark .text-indigo-950 {
+  color: #ffffff !important;
+}
+
+html.dark .text-\[\#4a4a40\] {
+  color: #dfdfd0 !important;
+}
+
+html.dark .text-\[\#5A5A40\] {
+  color: #cbcb9a !important;
+}
+
+html.dark .text-\[\#8e8e7a\] {
+  color: #abab8e !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-slate-600 {
+  color: #9c9c83 !important;
+}
+
+html.dark svg rect[fill="#fcfcf9"] {
+  fill: #1a1a15 !important;
+}
+
+html.dark svg circle[fill="#f5f5f0"] {
+  fill: #22221b !important;
+}
+
+html.dark svg circle[fill="#fcfcf9"] {
+  fill: #1b1b15 !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #22221a !important;
+  color: #eeeedf !important;
+  border-color: #38382b !important;
+}
+
+html.dark input::placeholder {
+  color: #8c8c6f !important;
+}
+
+button {
+  cursor: pointer;
+}
