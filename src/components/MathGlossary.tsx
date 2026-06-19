@@ -967,7 +967,7 @@ export const MathGlossary: React.FC<{ isArabicNumeral: boolean }> = ({ isArabicN
       <div className="bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-200/50 p-4 rounded-2xl flex items-start gap-3">
         <span className="text-xl shrink-0 mt-0.5">💡</span>
         <div className="space-y-1">
-          <h4 className="text-xs font-black text-emerald-800 dark:text-emerald-300">نصيحة بخت الرضا للأذكياء:</h4>
+          <h4 className="text-xs font-black text-emerald-800 dark:text-emerald-300">نصيحة نقلة للمناهج الإلكترونية للأذكياء:</h4>
           <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed font-bold">
             التكرار يعلم الشطار! استمع دائماً لنطق التعريف بالضغط على أيقونة المكبر 🗣️ لتعتاد على صياغة براهين وقطع لغوية رياضية ممتازة تساعدك في نيل الدرجات الكاملة في اختبارات شهادة المرحلة الابتدائية.
           </p>

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Lesson, StudentProgress } from '../types';
 import { toEasternArabicNumerals } from '../curriculumData';
+import { LessonWorksheets } from './LessonWorksheets';
 
 interface LessonViewProps {
   lesson: Lesson;
@@ -34,7 +35,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
   onGoBack,
   isArabicNumeral,
 }) => {
-  const [activeTab, setActiveTab] = useState<'study' | 'interactive'>('study');
+  const [activeTab, setActiveTab] = useState<'study' | 'interactive' | 'worksheets'>('study');
   const [completeSuccess, setCompleteSuccess] = useState(false);
 
   // Sizing and focus reading states
@@ -474,10 +475,20 @@ export const LessonView: React.FC<LessonViewProps> = ({
         >
           🔬 محاكاة وتمثيل الصور التفاعلية
         </button>
+        <button
+          onClick={() => setActiveTab('worksheets')}
+          className={`py-3 px-6 text-xs font-bold border-b-2 transition-all ${
+            activeTab === 'worksheets'
+              ? 'border-[#5A5A40] text-[#5A5A40]'
+              : 'border-transparent text-[#8e8e7a] hover:text-[#4a4a40]'
+          }`}
+        >
+          🖨️ أوراق عمل مجهزة للطباعة (١٥ صفحة)
+        </button>
       </div>
 
       {/* Screen Outputs based on tabs */}
-      {activeTab === 'study' ? (
+      {activeTab === 'study' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-right">
           
           {/* Theoretical Core explanations */}
@@ -727,7 +738,9 @@ export const LessonView: React.FC<LessonViewProps> = ({
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {activeTab === 'interactive' && (
         /* TAB 2: ADVANCED MATH INTERACTIVE MODELLING AND ILLUSTRATIONS */
         <div className="bg-white rounded-2xl p-6 border border-[#e0e0d1] shadow-sm text-right space-y-6">
           <div className="flex items-center justify-between border-b border-[#f5f5f0] pb-3">
@@ -1509,6 +1522,14 @@ export const LessonView: React.FC<LessonViewProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {activeTab === 'worksheets' && (
+        <LessonWorksheets
+          lesson={lesson}
+          isArabicNumeral={isArabicNumeral}
+          onBackToStudy={() => setActiveTab('study')}
+        />
       )}
     </div>
   );

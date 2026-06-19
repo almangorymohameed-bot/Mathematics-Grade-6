@@ -91,9 +91,7 @@ export default function App() {
 
   // Database States
   const [progress, setProgress] = useState<StudentProgress>(() => {
-    const saved = localStorage.getItem('sudanese_math_progress');
-    if (saved) return JSON.parse(saved);
-    return {
+    const defaultProgress: StudentProgress = {
       points: 80, // give some initial starting points for visual juice
       stars: 3,
       streak: 2,
@@ -103,11 +101,32 @@ export default function App() {
       completedQuizzes: {},
       lastStudyDate: new Date().toISOString().split('T')[0],
     };
+    const saved = localStorage.getItem('sudanese_math_progress');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          ...defaultProgress,
+          ...parsed,
+          completedLessons: parsed.completedLessons || [],
+          unitScores: parsed.unitScores || {},
+          completedQuizzes: parsed.completedQuizzes || {},
+        };
+      } catch (e) {
+        return defaultProgress;
+      }
+    }
+    return defaultProgress;
   });
 
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     const saved = localStorage.getItem('sudanese_math_notifications');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
     return [
       {
         id: 'welcome_alert',
@@ -122,13 +141,23 @@ export default function App() {
 
   const [parentGoals, setParentGoals] = useState<ParentGoal[]>(() => {
     const saved = localStorage.getItem('sudanese_math_parent_goals');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
     return [];
   });
 
   const [achievements, setAchievements] = useState<Achievement[]>(() => {
     const saved = localStorage.getItem('sudanese_math_achievements');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
     return INITIAL_ACHIEVEMENTS;
   });
 
@@ -409,7 +438,7 @@ export default function App() {
           <span>وضع المدارس الأوفلاين: نشط ✔️ (بياناتك محفوظة محلياً)</span>
         </div>
         <div className="hidden md:block text-slate-400 font-medium">
-          🇸🇩 وزارة التربية والتعليم - وزارة المناهج والبحث التربوي بخت الرضا
+          🇸🇩 وزارة التربية والتعليم - وزارة المناهج والبحث التربوي - نقلة للمناهج الإلكترونية
         </div>
         <div className="flex items-center gap-3">
           {/* Numbers type selector */}
@@ -875,7 +904,7 @@ export default function App() {
                           <button
                             key={c}
                             onClick={() => setQuizQuestionCount(c)}
-                            style={{ id: `count_btn_${c}` }}
+                            id={`count_btn_${c}`}
                             className={`p-2.5 rounded-xl border text-xs font-bold transition text-center ${
                               quizQuestionCount === c
                                 ? 'bg-indigo-650 hover:bg-indigo-750 text-white border-indigo-650 font-black scale-[1.02] shadow-sm'
@@ -1004,7 +1033,7 @@ export default function App() {
       {/* Footer bar */}
       <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 py-6 text-center text-[10px] md:text-xs">
         <div className="max-w-7xl mx-auto px-4 space-y-2">
-          <p>© {printNum(2026)} الرياضيات الذكية - جميع الحقوق محفوظة لجمهورية السودان والمركز القومي للمناهج والبحث التربوي بخت الرضا.</p>
+          <p>© {printNum(2026)} الرياضيات الذكية - جميع الحقوق محفوظة لجمهورية السودان والمركز القومي للمناهج والبحث التربوي - نقلة للمناهج الإلكترونية.</p>
           <p className="text-slate-600 font-medium">سلسلة المناهج المعتمدة للدراسة الابتدائية. تم دمج كافة المعامل بنمط تخزين محلي أوفلاين حماية وتحقيقاً لأفضل تفاعل دراسي.</p>
         </div>
       </footer>

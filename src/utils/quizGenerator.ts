@@ -32,7 +32,7 @@ export const generateDynamicQuestion = (unitId: string, lessonId?: string, index
         { item: 'مجموعة ولايات السودان السبعة عشر الكبرى', isSet: true },
         { item: 'التلاميذ المهذبون بالصف السادس', isSet: false },
         { item: 'الأعداد الفردية المحصورة بين 2 و 10', isSet: true },
-        { item: 'روايات الأطفال المشوقة في مكتبة بخت الرضا', isSet: false },
+        { item: 'روايات الأطفال المشوقة في منصة نقلة للمناهج الإلكترونية', isSet: false },
         { item: 'مدن السودان الجميلة جداً', isSet: false },
         { item: 'أحرف كلمة "خرطوم"', isSet: true },
       ];
