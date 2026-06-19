@@ -11,7 +11,10 @@ import {
   Layers,
   HelpCircle,
   Activity,
-  Star
+  Star,
+  Type,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { Lesson, StudentProgress } from '../types';
 import { toEasternArabicNumerals } from '../curriculumData';
@@ -33,6 +36,37 @@ export const LessonView: React.FC<LessonViewProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'study' | 'interactive'>('study');
   const [completeSuccess, setCompleteSuccess] = useState(false);
+
+  // Sizing and focus reading states
+  const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large' | 'xlarge'>('normal');
+  const [isReadingMode, setIsReadingMode] = useState<boolean>(false);
+
+  const getExplanationFontClass = () => {
+    switch (fontSize) {
+      case 'small': return 'text-[11px] md:text-xs leading-relaxed';
+      case 'normal': return 'text-xs md:text-sm leading-relaxed';
+      case 'large': return 'text-sm md:text-base leading-relaxed';
+      case 'xlarge': return 'text-base md:text-lg leading-relaxed';
+    }
+  };
+
+  const getExampleHeaderFontClass = () => {
+    switch (fontSize) {
+      case 'small': return 'text-[11px] md:text-xs font-bold leading-relaxed';
+      case 'normal': return 'text-xs md:text-sm font-bold leading-relaxed';
+      case 'large': return 'text-sm md:text-base font-bold leading-relaxed';
+      case 'xlarge': return 'text-base md:text-lg font-bold leading-relaxed';
+    }
+  };
+
+  const getExampleStepFontClass = () => {
+    switch (fontSize) {
+      case 'small': return 'text-[10px] md:text-[11px] leading-relaxed';
+      case 'normal': return 'text-[11px] md:text-xs leading-relaxed';
+      case 'large': return 'text-xs md:text-sm leading-relaxed';
+      case 'xlarge': return 'text-sm md:text-base leading-relaxed';
+    }
+  };
 
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -354,6 +388,70 @@ export const LessonView: React.FC<LessonViewProps> = ({
         </div>
       </div>
 
+      {/* Reading preferences toolbar */}
+      <div className="bg-white border border-[#e0e0d1] rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-right" id="reading_options_toolbar">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="text-xl p-2 bg-[#f5f5f0] border border-[#e0e0d1] text-[#5A5A40] rounded-xl shrink-0">
+            📖
+          </div>
+          <div>
+            <h4 className="font-bold text-xs text-[#5A5A40]">تفضيلات القراءة والمطالعة المريحة 👁️✨</h4>
+            <p className="text-[10px] text-[#8e8e7a]">تحكم في حجم خط المنهج وفعل وضع التركيز الذهني لتسهيل الفهم والمذاكرة</p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto justify-start sm:justify-end">
+          {/* Font Sizer Controls */}
+          <div className="flex items-center gap-2 bg-[#f5f5f0] p-1 rounded-xl border border-[#e0e0d1]">
+            <span className="text-[10px] font-bold text-[#5A5A40] px-2 flex items-center gap-1">
+              <Type className="w-3.5 h-3.5 text-[#8e8e7a]" /> حجم الخط:
+            </span>
+            <div className="flex items-center gap-1">
+              {(['small', 'normal', 'large', 'xlarge'] as const).map((size) => {
+                const label = size === 'small' ? 'A-' : size === 'normal' ? 'A' : size === 'large' ? 'A+' : 'A++';
+                const title = size === 'small' ? 'صغير' : size === 'normal' ? 'طبيعي' : size === 'large' ? 'كبير' : 'كبير جداً';
+                return (
+                  <button
+                    key={size}
+                    onClick={() => setFontSize(size)}
+                    title={title}
+                    className={`text-[10px] font-black px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                      fontSize === size 
+                        ? 'bg-[#5A5A40] text-white shadow-xs' 
+                        : 'text-[#5A5A40] hover:bg-[#e0e0d1]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Reading Mode Toggle */}
+          <button
+            onClick={() => setIsReadingMode(!isReadingMode)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+              isReadingMode 
+                ? 'bg-[#5A5A40] text-white border-[#5A5A40]' 
+                : 'bg-white text-[#5A5A40] border-[#e0e0d1] hover:bg-[#f5f5f0]'
+            }`}
+          >
+            {isReadingMode ? (
+              <>
+                <EyeOff className="w-4 h-4 text-white" />
+                <span>إلغاء وضع التركيز</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4 text-[#5A5A40]" />
+                <span>تفعيل وضع التركيز (إخفاء العناصر الجانبية) 🧘</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* Tabs Menu */}
       <div className="flex border-b border-[#e0e0d1]">
         <button
@@ -383,7 +481,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-right">
           
           {/* Theoretical Core explanations */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={`${isReadingMode ? 'lg:col-span-3' : 'lg:col-span-2'} space-y-6`}>
             
             {/* Textbook Explanation Block */}
             <div className="bg-white rounded-2xl p-6 border border-[#e0e0d1] shadow-sm relative">
@@ -408,7 +506,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
               </div>
 
               {/* Text content representation */}
-              <div className="text-xs text-[#4a4a40] leading-relaxed whitespace-pre-wrap space-y-3 font-medium">
+              <div className={`${getExplanationFontClass()} text-[#4a4a40] whitespace-pre-wrap space-y-3 font-medium`}>
                 {lesson.explanation}
               </div>
             </div>
@@ -446,12 +544,12 @@ export const LessonView: React.FC<LessonViewProps> = ({
                     </div>
 
                     <div className="space-y-3">
-                      <p className="font-bold text-xs text-[#4a4a40]">{ex.question}</p>
+                      <p className={`${getExampleHeaderFontClass()} text-[#4a4a40]`}>{ex.question}</p>
                       
                       <div className="space-y-2 pl-2 border-r-2 border-[#5A5A40]/30 mr-1 pr-3">
                         <span className="text-[10px] font-bold text-[#8e8e7a] block">خطوات البرهان الرياضي:</span>
                         {ex.steps.map((step, sIdx) => (
-                          <p key={sIdx} className="text-[11px] text-[#4a4a40] flex items-start gap-1">
+                          <p key={sIdx} className={`${getExampleStepFontClass()} text-[#4a4a40] flex items-start gap-1`}>
                             <span className="text-[#5A5A40] font-black">{formatNum(sIdx + 1)}.</span>
                             <span>{step}</span>
                           </p>
@@ -534,7 +632,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
                       {/* Question */}
                       <div className="space-y-1.5">
                         <span className="text-[10px] text-emerald-800 font-extrabold block">❓ المسألة والطلب الحياتي:</span>
-                        <p className="text-xs font-bold text-slate-700 leading-relaxed">{prob.question}</p>
+                        <p className={`${getExampleHeaderFontClass()} text-slate-700 leading-relaxed`}>{prob.question}</p>
                       </div>
 
                       {/* Explanation & Result Toggle */}
@@ -543,7 +641,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
                           {/* Explanation */}
                           <div className="space-y-1.5 pl-2 border-r-2 border-emerald-400/50 mr-1 pr-3">
                             <span className="text-[10px] text-emerald-800 font-extrabold block">💡 الحل والبرهان الرياضي الميداني:</span>
-                            <p className="text-[11px] text-[#4a4a40] leading-relaxed">{prob.explanation}</p>
+                            <p className={`${getExplanationFontClass()} text-[#4a4a40] leading-relaxed`}>{prob.explanation}</p>
                           </div>
 
                           {/* Result */}
@@ -583,49 +681,51 @@ export const LessonView: React.FC<LessonViewProps> = ({
           </div>
 
           {/* Quick study widgets column */}
-          <div className="space-y-6">
-            
-            {/* Sudan math teacher advisory snippet */}
-            <div className="bg-[#e9ece1] rounded-2xl p-5 border border-[#d6dbcc] space-y-2">
-              <h4 className="font-bold text-xs text-[#5A5A40] flex items-center gap-1">
-                <span>💡 نصيحة أستاذ الرياضيات:</span>
-              </h4>
-              <p className="text-[11px] text-[#4a4a40] leading-relaxed">
-                "عزيزي الطالب، لحل أي مسألة حِسابية بنجاح: اقرأ المعطيات بعناية أولاً، حدد المطلوب بدقة، ثم اتبع خطوات البرهان ولا تتسرع في كتابة النتيجة دون كتابة القانون الرياضي المعتمد!"
-              </p>
-              <div className="pt-2.5 border-t border-[#d6dbcc] flex items-center justify-between text-[9px] font-bold text-[#5A5A40]">
-                <span>المعلم الافتراضي أحمد</span>
-                <span>الصف السَّادس 🇸🇩</span>
+          {!isReadingMode && (
+            <div className="space-y-6">
+              
+              {/* Sudan math teacher advisory snippet */}
+              <div className="bg-[#e9ece1] rounded-2xl p-5 border border-[#d6dbcc] space-y-2">
+                <h4 className="font-bold text-xs text-[#5A5A40] flex items-center gap-1">
+                  <span>💡 نصيحة أستاذ الرياضيات:</span>
+                </h4>
+                <p className="text-[11px] text-[#4a4a40] leading-relaxed">
+                  "عزيزي الطالب، لحل أي مسألة حِسابية بنجاح: اقرأ المعطيات بعناية أولاً، حدد المطلوب بدقة، ثم اتبع خطوات البرهان ولا تتسرع في كتابة النتيجة دون كتابة القانون الرياضي المعتمد!"
+                </p>
+                <div className="pt-2.5 border-t border-[#d6dbcc] flex items-center justify-between text-[9px] font-bold text-[#5A5A40]">
+                  <span>المعلم الافتراضي أحمد</span>
+                  <span>الصف السَّادس 🇸🇩</span>
+                </div>
               </div>
-            </div>
 
-            {/* Symbols reference checklist card */}
-            <div className="bg-white rounded-2xl p-5 border border-[#e0e0d1] space-y-3">
-              <h4 className="font-bold text-xs text-[#5A5A40] border-b border-[#f5f5f0] pb-2">رموز أساسية في هذه الوحدة:</h4>
-              <div className="space-y-2">
-                <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#5A5A40] font-mono">∈ , ∉</span>
-                  <span className="text-[#4a4a40] text-[10px]">ينتمي / لا ينتمي للعنصر</span>
-                </div>
-                <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#5A5A40] font-mono">⊂ , ⊄</span>
-                  <span className="text-[#4a4a40] text-[10px]">محتواة في / غير محتواة في</span>
-                </div>
-                <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#5A5A40] font-mono">∅</span>
-                  <span className="text-[#4a4a40] text-[10px]">المجموعة الخالية (فاي)</span>
-                </div>
-                <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#5A5A40] font-mono">|س|</span>
-                  <span className="text-[#4a4a40] text-[10px]">القيمة المطلقة للعدد صحيح</span>
-                </div>
-                <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#5A5A40] font-mono">ط (π)</span>
-                  <span className="text-[#4a4a40] text-[10px]">النسبة التقريبية الدائرية (٢٢/٧)</span>
+              {/* Symbols reference checklist card */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e0e0d1] space-y-3">
+                <h4 className="font-bold text-xs text-[#5A5A40] border-b border-[#f5f5f0] pb-2">رموز أساسية في هذه الوحدة:</h4>
+                <div className="space-y-2">
+                  <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-bold text-[#5A5A40] font-mono">∈ , ∉</span>
+                    <span className="text-[#4a4a40] text-[10px]">ينتمي / لا ينتمي للعنصر</span>
+                  </div>
+                  <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-bold text-[#5A5A40] font-mono">⊂ , ⊄</span>
+                    <span className="text-[#4a4a40] text-[10px]">محتواة في / غير محتواة في</span>
+                  </div>
+                  <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-bold text-[#5A5A40] font-mono">∅</span>
+                    <span className="text-[#4a4a40] text-[10px]">المجموعة الخالية (فاي)</span>
+                  </div>
+                  <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-bold text-[#5A5A40] font-mono">|س|</span>
+                    <span className="text-[#4a4a40] text-[10px]">القيمة المطلقة للعدد صحيح</span>
+                  </div>
+                  <div className="bg-[#f5f5f0] p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-bold text-[#5A5A40] font-mono">ط (π)</span>
+                    <span className="text-[#4a4a40] text-[10px]">النسبة التقريبية الدائرية (٢٢/٧)</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       ) : (
         /* TAB 2: ADVANCED MATH INTERACTIVE MODELLING AND ILLUSTRATIONS */
